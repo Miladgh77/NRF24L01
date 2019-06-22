@@ -112,10 +112,10 @@ uint8_t get_status(void)
 	statReg = read_register(REG_STATUS);
 	return statReg;
 }
-void init(GPIO_TypeDef *nrf24PORT, uint16_t nrfCSN_Pin, uint16_t nrfCE_Pin, SPI_HandleTypeDef nrfSPI,UART_HandleTypeDef nrf24Uart)
+void init(GPIO_TypeDef *nrf24PORT, uint16_t nrfCSN_Pin, uint16_t nrfCE_Pin, SPI_HandleTypeDef* nrfSPI,UART_HandleTypeDef* nrf24Uart)
 {
-	memcpy(&nrf24_hspi, &nrfSPI, sizeof(nrfSPI));
-	memcpy(&nrf24_huart, &nrf24Uart, sizeof(nrf24Uart));
+	memcpy(&nrf24_hspi, nrfSPI, sizeof(*nrfSPI));
+	memcpy(&nrf24_huart, nrf24Uart, sizeof(*nrf24Uart));
 	nrf24_PORT = nrf24PORT;
 	nrf24_CSN_PIN = nrfCSN_Pin;
 	nrf24_CE_PIN = nrfCE_Pin;

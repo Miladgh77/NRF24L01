@@ -59,11 +59,12 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+	
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-uint64_t TXpipe_address = 0x11223344AA;
+	//extern int flag;
+uint64_t TXpipe_address = 0x11223344BC;
 //uint8_t data;
 /* USER CODE END 0 */
 
@@ -99,14 +100,16 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-init(CEpin_GPIO_Port,CSNpin_Pin, CEpin_Pin, hspi2 , huart2);
-
-openWritingPipe(TXpipe_address);
+init(CEpin_GPIO_Port,CSNpin_Pin, CEpin_Pin, &hspi2 , &huart2);
 setAutoAckall(false);
 setChannel(52);
 setPayloadSize(32);
-char data[64];
-HAL_UART_Receive_IT(&huart2 , (uint8_t*)data ,1);
+openWritingPipe(TXpipe_address);
+
+//openReadingPipe(1,0x11223344AA);
+char data[32];
+
+//HAL_UART_Receive_IT(&huart2, (uint8_t*)c, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -117,9 +120,19 @@ HAL_UART_Receive_IT(&huart2 , (uint8_t*)data ,1);
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	//write("Hello" , 32);
-	//HAL_Delay(1000);	
-		
+		write("hello",32);
+		HAL_Delay(1000);
+//	if(flag == 1){
+//		flag = 0;
+//		openWritingPipe(0x11223344AA);
+//		write(c,1);
+//		openReadingPipe(1,0x11223344AA);
+//		HAL_UART_Receive_IT(&huart2, (uint8_t*)c, 1);
+//	}
+//	if(available()){
+//		read(data,32);
+//		print(data);
+//	}
   }
   /* USER CODE END 3 */
 

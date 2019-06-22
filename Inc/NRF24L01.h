@@ -162,7 +162,7 @@ void flush_rx(void);
 //finding the status with status register
 uint8_t get_status(void);
 //initial function
-void init(GPIO_TypeDef *nrf24PORT, uint16_t nrfCSN_Pin, uint16_t nrfCE_Pin, SPI_HandleTypeDef nrfSPI,UART_HandleTypeDef nrf24Uart);
+void init(GPIO_TypeDef *nrf24PORT, uint16_t nrfCSN_Pin, uint16_t nrfCE_Pin, SPI_HandleTypeDef* nrfSPI,UART_HandleTypeDef* nrf24Uart);
 //setting the payload size
 void setPayloadSize(uint8_t size);
 //finding out the payload size
