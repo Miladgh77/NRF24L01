@@ -101,12 +101,12 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 init(CEpin_GPIO_Port,CSNpin_Pin, CEpin_Pin, &hspi2 , &huart2);
-setAutoAckall(false);
+setAutoAckall(true);
 setChannel(52);
 setPayloadSize(32);
-openWritingPipe(TXpipe_address);
+//openWritingPipe(TXpipe_address);
 
-//openReadingPipe(1,0x11223344AA);
+openReadingPipe(1,0x11223344BC);
 char data[32];
 
 //HAL_UART_Receive_IT(&huart2, (uint8_t*)c, 1);
@@ -120,8 +120,8 @@ char data[32];
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-		write("hello",32);
-		HAL_Delay(1000);
+//		write("hello",32);
+//		HAL_Delay(1000);
 //	if(flag == 1){
 //		flag = 0;
 //		openWritingPipe(0x11223344AA);
@@ -129,10 +129,10 @@ char data[32];
 //		openReadingPipe(1,0x11223344AA);
 //		HAL_UART_Receive_IT(&huart2, (uint8_t*)c, 1);
 //	}
-//	if(available()){
-//		read(data,32);
-//		print(data);
-//	}
+	if(available()){
+		read(data,32);
+		print(data);
+	}
   }
   /* USER CODE END 3 */
 

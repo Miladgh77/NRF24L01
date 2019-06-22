@@ -22,19 +22,24 @@ void print(const char* msg){
 	static uint8_t newline = '\n';
 	int l = strlen(msg);
 	HAL_UART_Transmit(&nrf24_huart, (uint8_t*) msg, l, 100);
-	HAL_UART_Transmit(&nrf24_huart, &newline, 1, 100);
+	//HAL_UART_Transmit(&nrf24_huart, &newline, 1, 100);
 }
+
+
 void DelayMicroSeconds(uint32_t uSec)
 {
 	uint32_t uSecVar = uSec;
 	uSecVar = uSecVar* ((SystemCoreClock/1000000)/3);
 	while(uSecVar--);
 }
+
+
 void csn(int state)
 {
 	if(state) HAL_GPIO_WritePin(nrf24_PORT,nrf24_CSN_PIN, GPIO_PIN_SET);
 	else HAL_GPIO_WritePin(nrf24_PORT, nrf24_CSN_PIN, GPIO_PIN_RESET);
 }
+//////////////
 void ce(int state)
 {
 	if(state) HAL_GPIO_WritePin(nrf24_PORT, nrf24_CE_PIN, GPIO_PIN_SET);
@@ -52,6 +57,8 @@ uint8_t read_register(uint8_t reg)
 	csn(1);
 	return retData;
 }
+
+//////////////////
 void NRF24_read_registerN(uint8_t reg, uint8_t *buf, uint8_t len)
 {
 	uint8_t spiBuf[3];
@@ -61,6 +68,8 @@ void NRF24_read_registerN(uint8_t reg, uint8_t *buf, uint8_t len)
 	HAL_SPI_Receive(&nrf24_hspi, buf, len, 100);
 	csn(1);
 }
+
+/////////////////
 void write_register(uint8_t reg, uint8_t value)
 {
 	uint8_t spiBuf[3];
@@ -70,6 +79,8 @@ void write_register(uint8_t reg, uint8_t value)
 	HAL_SPI_Transmit(&nrf24_hspi, spiBuf, 2, 100);
 	csn(1);
 }
+
+////////////////////////
 void write_registerN(uint8_t reg, const uint8_t* buf, uint8_t len)
 {
 	uint8_t spiBuf[3];
@@ -79,6 +90,8 @@ void write_registerN(uint8_t reg, const uint8_t* buf, uint8_t len)
 	HAL_SPI_Transmit(&nrf24_hspi, (uint8_t*)buf, len, 100);
 	csn(1);
 }
+
+//////////////////////
 void write_payload(const void* buf, uint8_t len)
 {
 	uint8_t wrPayloadCmd;
@@ -88,6 +101,8 @@ void write_payload(const void* buf, uint8_t len)
 	HAL_SPI_Transmit(&nrf24_hspi, (uint8_t *)buf, len, 100);
 	csn(1);
 }
+
+///////////////////////
 void read_payload(void* buf, uint8_t len)
 {
 	uint8_t cmdRxBuf;
@@ -98,10 +113,14 @@ void read_payload(void* buf, uint8_t len)
 	HAL_SPI_Receive(&nrf24_hspi, buf, data_len, 100);
 	csn(1);
 }
+
+//////////////////////////
 void flush_tx(void)
 {
 	write_register(CMD_FLUSH_TX, 0xFF);
 }
+
+///////////////////
 void flush_rx(void)
 {
 	write_register(CMD_FLUSH_RX, 0xFF);
@@ -112,6 +131,8 @@ uint8_t get_status(void)
 	statReg = read_register(REG_STATUS);
 	return statReg;
 }
+
+/////////////////////////
 void init(GPIO_TypeDef *nrf24PORT, uint16_t nrfCSN_Pin, uint16_t nrfCE_Pin, SPI_HandleTypeDef* nrfSPI,UART_HandleTypeDef* nrf24Uart)
 {
 	memcpy(&nrf24_hspi, nrfSPI, sizeof(*nrfSPI));
@@ -167,6 +188,8 @@ void init(GPIO_TypeDef *nrf24PORT, uint16_t nrfCSN_Pin, uint16_t nrfCE_Pin, SPI_
 	flush_rx();
 	powerDown();
 }
+
+///////////////////////
 void setPayloadSize(uint8_t size)
 {
 	const uint8_t max_payload_size = 32;
@@ -176,6 +199,8 @@ uint8_t getPayloadSize(void)
 {
 	return payload_size;
 }
+
+/////////////////////////
 void ACTIVATE_cmd(void)
 {
 	uint8_t cmdRxBuf[2];
@@ -185,18 +210,26 @@ void ACTIVATE_cmd(void)
 	HAL_SPI_Transmit(&nrf24_hspi, cmdRxBuf, 2, 100);
 	csn(1);
 }
+
+//////////////////////////
 void powerUp(void)
 {
 	write_register(REG_CONFIG,read_register(REG_CONFIG) | _BV(BIT_PWR_UP));
 }
+
+//////////////////////////
 void powerDown(void)
 {
 	write_register(REG_CONFIG,read_register(REG_CONFIG) & ~_BV(BIT_PWR_UP));
 }
+
+///////////////////////////////
 void setRetries(uint8_t delay, uint8_t count)
 {
 	write_register(REG_SETUP_RETR,(delay&0xf)<<BIT_ARD | (count&0xf)<<BIT_ARC);
 }
+
+/////////////////////////////////
 void setpower( power level )
 {
 	uint8_t setup = read_register(REG_RF_SETUP) ;
@@ -212,6 +245,8 @@ void setpower( power level )
     setup |= (_BV(RF_PWR_LOW) | _BV(RF_PWR_HIGH)) ;
 	write_register(REG_RF_SETUP,setup);
 }
+
+///////////////////////////
 void setspeed(speed spd)
 {
   uint8_t setup = read_register(REG_RF_SETUP) ;
@@ -220,21 +255,29 @@ void setspeed(speed spd)
     setup |= _BV(RF_DR);
 	write_register(REG_RF_SETUP,setup);
 }
+
+////////////////////////////////
 void resetStatus(void)
 {
 	write_register(REG_STATUS,_BV(BIT_RX_DR) | _BV(BIT_TX_DS) | _BV(BIT_MAX_RT) );
 }
+
+///////////////////////////////
 void setChannel(uint8_t channel)
 {
 	const uint8_t max_channel = 127;
   write_register(REG_RF_CH,MIN(channel,max_channel));
 }
+
+////////////////////////////
 void disableDynamicPayloads(void)
 {
 	write_register(REG_FEATURE,read_register(REG_FEATURE) &  ~(_BV(BIT_EN_DPL)) );
 	write_register(REG_DYNPD,0);
 	//dynamic_payloads_enabled = false;
 }
+
+///////////////////////////
 void openReadingPipe(uint8_t number, uint64_t address)
 {
 	if (number == 0)
@@ -250,6 +293,8 @@ void openReadingPipe(uint8_t number, uint64_t address)
 	}
 	startListening();
 }
+
+///////////////////////////////
 void startListening(void)
 {
 	write_register(REG_CONFIG, read_register(REG_CONFIG) | (1UL<<1) |(1UL <<0));
@@ -260,12 +305,16 @@ void startListening(void)
 	ce(1);
 	DelayMicroSeconds(150);
 }
+
+///////////////////////////
 void stopListening(void)
 {
 	ce(0);
 	flush_tx();
 	flush_rx();
 }
+
+/////////////////////////
 bool available()
 {
 	uint8_t status = get_status();
@@ -278,6 +327,8 @@ bool available()
   }
   return result;
 }
+
+/////////////////////////
 bool read( void* buf, uint8_t len )
 {
 	read_payload( buf, len );
@@ -286,6 +337,8 @@ bool read( void* buf, uint8_t len )
 	//NRF24_getDynamicPayloadSize();
 	return rxStatus;
 }
+
+////////////////////
 void openWritingPipe(uint64_t address)
 {
 	stopListening();
@@ -294,6 +347,8 @@ void openWritingPipe(uint64_t address)
 	const uint8_t max_payload_size = 32;
   write_register(REG_RX_PW_P0,MIN(payload_size,max_payload_size));
 }
+
+///////////////////////
 void callwritepayload( const void* buf, uint8_t len)
 {
   write_register(REG_CONFIG, ( read_register(REG_CONFIG) | _BV(BIT_PWR_UP) ) & ~_BV(BIT_PRIM_RX) );
@@ -303,6 +358,8 @@ void callwritepayload( const void* buf, uint8_t len)
   DelayMicroSeconds(15);
   ce(0);
 }
+
+//////////////////////////////
 void write( const void* buf, uint8_t len )
 {
 	bool retStatus;
@@ -327,9 +384,11 @@ void write( const void* buf, uint8_t len )
 	flush_tx();
 	if(!retStatus)
 		print("Failed to transmit");
-	else
-		print("Transmitted successfully");
+	//else
+		//print("Transmitted successfully");
 }
+
+/////////////////////////////////
 void condition(bool *tx_ok,bool *tx_fail,bool *rx_ready)
 {
 	uint8_t status = get_status();
@@ -343,6 +402,7 @@ uint8_t getDynamicPayloadSize(void)
 {
 	return read_register(CMD_R_RX_PL_WID);
 }
+/////////////////////////////////
 void setAutoAckall(bool enable)
 {
 	if ( enable )
@@ -350,6 +410,7 @@ void setAutoAckall(bool enable)
   else
     write_register(REG_EN_AA, 0x00);
 }
+///////////////////////////////////
 void setAutoAckPipe( uint8_t pipe, bool enable )
 {
 	if ( pipe <= 6 )
